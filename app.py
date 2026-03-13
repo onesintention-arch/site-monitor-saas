@@ -2,25 +2,42 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-urls = []
+data = []
 
 @app.route("/", methods=["GET", "POST"])
 def home():
+
     if request.method == "POST":
         url = request.form["url"]
-        urls.append(url)
+        webhook = request.form["webhook"]
+
+        data.append({
+            "url": url,
+            "webhook": webhook
+        })
 
     html = """
     <h1>サイト監視SaaS</h1>
+
     <form method="POST">
-        <input name="url" placeholder="監視したいURL">
-        <button type="submit">登録</button>
+
+    <p>監視URL</p>
+    <input name="url" placeholder="https://example.com">
+
+    <p>Discord Webhook</p>
+    <input name="webhook" placeholder="Discord webhook URL">
+
+    <br><br>
+
+    <button type="submit">登録</button>
+
     </form>
-    <h2>登録URL</h2>
+
+    <h2>登録リスト</h2>
     """
 
-    for u in urls:
-        html += f"<p>{u}</p>"
+    for item in data:
+        html += f"<p>{item['url']}</p>"
 
     return html
 
